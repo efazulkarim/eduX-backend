@@ -1,0 +1,63 @@
+---
+alwaysApply: true
+---
+
+# School Management System - Backend Rules
+
+# NestJS + Prisma + PostgreSQL
+
+## 🏗️ Architecture Principles
+
+- Follow Domain-Driven Design (DDD) patterns
+- Maintain consistent layered architecture across all modules
+- Implement dependency injection for testability
+- Use TypeScript strict mode for type safety
+
+### Controllers
+
+- Use `@ApiTags()` for Swagger grouping
+- Implement proper HTTP status codes
+- Use DTOs for request/response validation
+- Handle errors with proper exception filters
+
+### Services
+
+- Implement business logic only
+- Use dependency injection for database access
+- Write comprehensive unit tests (80%+ coverage)
+- Handle database transactions properly
+
+### DTOs
+
+- Use class-validator decorators
+- Include Swagger documentation with `@ApiProperty()`
+- Implement proper validation rules
+- Use PartialType for update DTOs
+
+### Database (Prisma)
+
+- Use descriptive model names (PascalCase)
+- Include proper relationships
+- Add indexes for performance
+- Use migrations for schema changes
+
+## 🚨 Error Handling
+
+- Use custom exception filters
+- Implement proper HTTP status codes
+- Log errors with context information
+- Return user-friendly error messages
+
+## 🔐 Security
+
+- Validate all inputs
+- Use parameterized queries (Prisma handles this)
+- Implement rate limiting
+- Use JWT for authentication (when enabled)
+
+## 🎨 Code Style
+
+- Use Prettier for formatting
+- Follow ESLint rules
+- Use meaningful variable names
+- Keep functions small and focused
