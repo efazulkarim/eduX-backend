@@ -314,11 +314,11 @@ async function main() {
     const createData: any = {
       ...studentData,
     };
-    
+
     if (sampleSection?.id) {
       createData.sectionId = sampleSection.id;
     }
-    
+
     await prisma.student.upsert({
       where: { rollNumber: studentData.rollNumber },
       update: {},
@@ -361,12 +361,37 @@ async function main() {
   // Create sample subjects for different classes
   const subjects = [
     // Primary level subjects (Play to Five)
-    { name: 'Bangla', code: 'BAN001', description: 'Bengali Language', credits: 1 },
-    { name: 'English', code: 'ENG001', description: 'English Language', credits: 1 },
-    { name: 'Mathematics', code: 'MAT001', description: 'Basic Mathematics', credits: 1 },
-    { name: 'General Knowledge', code: 'GK001', description: 'General Knowledge', credits: 1 },
-    { name: 'Drawing', code: 'DRW001', description: 'Art and Drawing', credits: 1 },
-    
+    {
+      name: 'Bangla',
+      code: 'BAN001',
+      description: 'Bengali Language',
+      credits: 1,
+    },
+    {
+      name: 'English',
+      code: 'ENG001',
+      description: 'English Language',
+      credits: 1,
+    },
+    {
+      name: 'Mathematics',
+      code: 'MAT001',
+      description: 'Basic Mathematics',
+      credits: 1,
+    },
+    {
+      name: 'General Knowledge',
+      code: 'GK001',
+      description: 'General Knowledge',
+      credits: 1,
+    },
+    {
+      name: 'Drawing',
+      code: 'DRW001',
+      description: 'Art and Drawing',
+      credits: 1,
+    },
+
     // Secondary level subjects (Six to Ten)
     { name: 'Physics', code: 'PHY001', description: 'Physics', credits: 1 },
     { name: 'Chemistry', code: 'CHE001', description: 'Chemistry', credits: 1 },
@@ -375,8 +400,18 @@ async function main() {
     { name: 'History', code: 'HIS001', description: 'History', credits: 1 },
     { name: 'Civics', code: 'CIV001', description: 'Civics', credits: 1 },
     { name: 'Economics', code: 'ECO001', description: 'Economics', credits: 1 },
-    { name: 'Religion', code: 'REL001', description: 'Religious Studies', credits: 1 },
-    { name: 'ICT', code: 'ICT001', description: 'Information and Communication Technology', credits: 1 },
+    {
+      name: 'Religion',
+      code: 'REL001',
+      description: 'Religious Studies',
+      credits: 1,
+    },
+    {
+      name: 'ICT',
+      code: 'ICT001',
+      description: 'Information and Communication Technology',
+      credits: 1,
+    },
   ];
 
   for (const subjectData of subjects) {
@@ -396,100 +431,177 @@ async function main() {
 
   console.log('✅ Sample subjects created');
 
-  // Create simple exam templates with proper sequencing
-  const examTemplates = [
+  // Get all classes for creating custom exams
+  const allClasses = await prisma.class.findMany({ where: { isActive: true } });
+  const allSubjects = await prisma.subject.findMany({
+    where: { isActive: true },
+  });
+  const allSections = await prisma.section.findMany({
+    where: { isActive: true },
+  });
+
+  // Create custom exam data based on your requirements
+  const customExams = [
     {
       title: 'First Term Exam',
+      customName: 'string',
+      type: 'MIDTERM',
+      description: 'First term examination',
+      duration: 180,
+      totalMarks: 100,
+      passMarks: 40,
+      sequence: 0,
+      isActive: true,
+      startDate: new Date('2025-07-17T00:00:00.000Z'),
+      endDate: new Date('2025-07-17T00:00:00.000Z'),
+    },
+    {
+      title: 'First Term Exam',
+      customName: '',
       type: 'MIDTERM',
       description: 'First term examination',
       duration: 180,
       totalMarks: 100,
       passMarks: 40,
       sequence: 1,
+      isActive: false,
+      startDate: new Date('2025-07-17T00:00:00.000Z'),
+      endDate: new Date('2025-07-17T00:00:00.000Z'),
     },
     {
       title: 'Second Term Exam',
+      customName: '',
       type: 'MIDTERM',
       description: 'Second term examination',
       duration: 180,
       totalMarks: 100,
       passMarks: 40,
       sequence: 2,
+      isActive: false,
+      startDate: new Date('2025-07-17T00:00:00.000Z'),
+      endDate: new Date('2025-07-17T00:00:00.000Z'),
     },
     {
       title: 'Middle Term Exam',
+      customName: '',
       type: 'MIDTERM',
       description: 'Middle term examination',
       duration: 180,
       totalMarks: 100,
       passMarks: 40,
       sequence: 3,
+      isActive: false,
+      startDate: new Date('2025-07-17T00:00:00.000Z'),
+      endDate: new Date('2025-07-17T00:00:00.000Z'),
     },
     {
       title: 'Final Exam',
+      customName: '',
       type: 'FINAL',
       description: 'Final examination',
       duration: 180,
       totalMarks: 100,
       passMarks: 40,
       sequence: 4,
+      isActive: false,
+      startDate: new Date('2025-07-17T00:00:00.000Z'),
+      endDate: new Date('2025-07-17T00:00:00.000Z'),
+    },
+    {
+      title: 'Test Exam',
+      customName: 'Custom Test',
+      type: 'MIDTERM',
+      description: 'Test examination',
+      duration: 120,
+      totalMarks: 50,
+      passMarks: 20,
+      sequence: 1,
+      isActive: true,
+      startDate: new Date('2025-07-20T10:00:00.000Z'),
+      endDate: new Date('2025-07-20T12:00:00.000Z'),
+    },
+    {
+      title: 'Minimal Exam',
+      customName: '',
+      type: 'MIDTERM',
+      description: 'Minimal examination',
+      duration: 120,
+      totalMarks: 50,
+      passMarks: 20,
+      sequence: 1,
+      isActive: true,
+      startDate: new Date('2025-07-21T09:00:00.000Z'),
+      endDate: new Date('2025-07-21T11:00:00.000Z'),
+    },
+    {
+      title: 'Math Quiz',
+      customName: '',
+      type: 'QUIZ',
+      description: 'Mathematics quiz',
+      duration: 120,
+      totalMarks: 50,
+      passMarks: 20,
+      sequence: 1,
+      isActive: true,
+      startDate: new Date('2025-07-25T09:00:00.000Z'),
+      endDate: new Date('2025-07-25T11:00:00.000Z'),
+    },
+    {
+      title: 'New Test Exam',
+      customName: '',
+      type: 'MIDTERM',
+      description: 'New test examination',
+      duration: 120,
+      totalMarks: 50,
+      passMarks: 20,
+      sequence: 1,
+      isActive: true,
+      startDate: new Date('2025-07-26T14:00:00.000Z'),
+      endDate: new Date('2025-07-26T16:00:00.000Z'),
     },
   ];
 
-  // Get all classes and subjects for creating exams
-  const allClasses = await prisma.class.findMany({ where: { isActive: true } });
-  const allSubjects = await prisma.subject.findMany({ where: { isActive: true } });
-  const allSections = await prisma.section.findMany({ where: { isActive: true } });
-
-  // Create exams for each class and subject combination
+  // Create exams for each class with custom data
   let examCount = 0;
   for (const classItem of allClasses) {
-    for (const subject of allSubjects) {
-      for (const examTemplate of examTemplates) {
-        // Get a section for this class (if available)
-        const classSection = allSections.find(s => s.classId === classItem.id);
-        
-        // Create exam date based on sequence (spread throughout the year)
-        const baseDate = new Date('2024-03-01');
-        const examDate = new Date(baseDate);
-        examDate.setDate(baseDate.getDate() + (examTemplate.sequence * 7)); // Weekly intervals
-        
-        // Create start and end dates
-        const startDate = new Date(examDate);
-        const endDate = new Date(examDate);
-        endDate.setHours(examDate.getHours() + Math.floor(examTemplate.duration / 60));
-        
-        try {
-          await prisma.exam.create({
-            data: {
-              title: `${examTemplate.title} - ${subject.name} - Class ${classItem.name}`,
-              customName: '', // Empty custom name initially
-              type: examTemplate.type as any,
-              description: `${examTemplate.description} for ${subject.name} in Class ${classItem.name}`,
-              date: examDate,
-              startDate: startDate,
-              endDate: endDate,
-              duration: examTemplate.duration,
-              totalMarks: examTemplate.totalMarks,
-              passMarks: examTemplate.passMarks,
-              sequence: examTemplate.sequence,
-              classId: classItem.id,
-              sectionId: classSection?.id || null,
-              subjectId: subject.id,
-              teacherId: teacher.id,
-              isActive: true,
-            },
-          });
-          examCount++;
-        } catch (error) {
-          // Skip if exam already exists or other constraint violation
-          console.log(`Skipping exam creation for ${classItem.name} - ${subject.name} - ${examTemplate.title}`);
-        }
+    const firstSubject = allSubjects[0]; // Use first subject for all exams
+    const classSection = allSections.find((s) => s.classId === classItem.id);
+
+    for (const examData of customExams) {
+      try {
+        await prisma.exam.create({
+          data: {
+            title: examData.title,
+            customName: examData.customName,
+            type: examData.type as any,
+            description: examData.description,
+            date: examData.startDate,
+            startDate: examData.startDate,
+            endDate: examData.endDate,
+            duration: examData.duration,
+            totalMarks: examData.totalMarks,
+            passMarks: examData.passMarks,
+            sequence: examData.sequence,
+            classId: classItem.id,
+            sectionId: classSection?.id || null,
+            subjectId: firstSubject?.id,
+            teacherId: teacher.id,
+            isActive: examData.isActive,
+          },
+        });
+        examCount++;
+      } catch (error) {
+        // Skip if exam already exists or other constraint violation
+        console.log(
+          `Skipping exam creation for ${classItem.name} - ${examData.title}`,
+        );
       }
     }
   }
 
-  console.log(`✅ ${examCount} sample exams created across all classes and subjects`);
+  console.log(
+    `✅ ${examCount} custom exams created with proper CustomName and sequence values`,
+  );
 
   console.log('🎉 Database seeding completed successfully!');
   console.log('');
@@ -501,7 +613,7 @@ async function main() {
   console.log(`- ${allClasses.length} Classes`);
   console.log(`- ${allSubjects.length} Subjects`);
   console.log(`- ${examCount} Exams with proper sequencing`);
-  console.log(`- ${examTemplates.length} Different exam types available`);
+  console.log(`- ${customExams.length} Different exam types available`);
 }
 
 main()
