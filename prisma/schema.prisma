@@ -190,12 +190,16 @@ model Attendance {
 model Exam {
   id          String       @id @default(cuid())
   title       String
+  customName  String?
   type        ExamType
   description String?
   date        DateTime
+  startDate   DateTime?
+  endDate     DateTime?
   duration    Int
   totalMarks  Int
   passMarks   Int
+  sequence    Int          @default(1)
   classId     String
   sectionId   String?
   subjectId   String

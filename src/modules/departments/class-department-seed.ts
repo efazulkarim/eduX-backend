@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -18,21 +19,27 @@ export async function seedClassDepartments() {
     });
 
     if (classes.length === 0 || departments.length === 0) {
-      console.log('No classes or departments found. Please seed classes and departments first.');
+      console.log(
+        'No classes or departments found. Please seed classes and departments first.',
+      );
       return;
     }
 
     // Define which departments should be available for which classes
     // Assuming departments are only for Class 8 and above
-    const classesWithDepartments = classes.filter(cls => {
+    const classesWithDepartments = classes.filter((cls) => {
       const className = cls.name.toLowerCase();
-      // Include classes 8, 9, 10, 11, 12, etc.
-      return /^(eight|nine|ten|eleven|twelve|\d+)$/i.test(className) || 
-             parseInt(className) >= 8;
+      // Include classes 9, 10, 11, 12, etc.
+      return (
+        /^(nine|ten|eleven|twelve|\d+)$/i.test(className) ||
+        parseInt(className) >= 9
+      );
     });
 
-    console.log(`Found ${classesWithDepartments.length} classes that should have departments:`);
-    classesWithDepartments.forEach(cls => console.log(`- ${cls.name}`));
+    console.log(
+      `Found ${classesWithDepartments.length} classes that should have departments:`,
+    );
+    classesWithDepartments.forEach((cls) => console.log(`- ${cls.name}`));
 
     // Create class-department relationships
     const classDepartmentData: Array<{
@@ -40,7 +47,7 @@ export async function seedClassDepartments() {
       departmentId: string;
       isActive: boolean;
     }> = [];
-    
+
     for (const cls of classesWithDepartments) {
       for (const dept of departments) {
         classDepartmentData.push({
@@ -67,8 +74,10 @@ export async function seedClassDepartments() {
       });
     }
 
-    console.log(`✅ Created ${classDepartmentData.length} class-department relationships`);
-    
+    console.log(
+      `✅ Created ${classDepartmentData.length} class-department relationships`,
+    );
+
     // Display summary
     const summary = await prisma.classDepartment.groupBy({
       by: ['classId'],
@@ -80,10 +89,9 @@ export async function seedClassDepartments() {
 
     console.log('\nSummary of active class-department relationships:');
     for (const item of summary) {
-      const className = classes.find(c => c.id === item.classId)?.name;
+      const className = classes.find((c) => c.id === item.classId)?.name;
       console.log(`- ${className}: ${item._count.departmentId} departments`);
     }
-
   } catch (error) {
     console.error('Error seeding class-department relationships:', error);
     throw error;

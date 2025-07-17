@@ -358,11 +358,150 @@ async function main() {
 
   console.log('✅ Fee types created');
 
+  // Create sample subjects for different classes
+  const subjects = [
+    // Primary level subjects (Play to Five)
+    { name: 'Bangla', code: 'BAN001', description: 'Bengali Language', credits: 1 },
+    { name: 'English', code: 'ENG001', description: 'English Language', credits: 1 },
+    { name: 'Mathematics', code: 'MAT001', description: 'Basic Mathematics', credits: 1 },
+    { name: 'General Knowledge', code: 'GK001', description: 'General Knowledge', credits: 1 },
+    { name: 'Drawing', code: 'DRW001', description: 'Art and Drawing', credits: 1 },
+    
+    // Secondary level subjects (Six to Ten)
+    { name: 'Physics', code: 'PHY001', description: 'Physics', credits: 1 },
+    { name: 'Chemistry', code: 'CHE001', description: 'Chemistry', credits: 1 },
+    { name: 'Biology', code: 'BIO001', description: 'Biology', credits: 1 },
+    { name: 'Geography', code: 'GEO001', description: 'Geography', credits: 1 },
+    { name: 'History', code: 'HIS001', description: 'History', credits: 1 },
+    { name: 'Civics', code: 'CIV001', description: 'Civics', credits: 1 },
+    { name: 'Economics', code: 'ECO001', description: 'Economics', credits: 1 },
+    { name: 'Religion', code: 'REL001', description: 'Religious Studies', credits: 1 },
+    { name: 'ICT', code: 'ICT001', description: 'Information and Communication Technology', credits: 1 },
+  ];
+
+  for (const subjectData of subjects) {
+    await prisma.subject.upsert({
+      where: { code: subjectData.code },
+      update: {},
+      create: {
+        name: subjectData.name,
+        code: subjectData.code,
+        description: subjectData.description,
+        credits: subjectData.credits,
+        teacherId: teacher.id,
+        isActive: true,
+      },
+    });
+  }
+
+  console.log('✅ Sample subjects created');
+
+  // Create simple exam templates with proper sequencing
+  const examTemplates = [
+    {
+      title: 'First Term Exam',
+      type: 'MIDTERM',
+      description: 'First term examination',
+      duration: 180,
+      totalMarks: 100,
+      passMarks: 40,
+      sequence: 1,
+    },
+    {
+      title: 'Second Term Exam',
+      type: 'MIDTERM',
+      description: 'Second term examination',
+      duration: 180,
+      totalMarks: 100,
+      passMarks: 40,
+      sequence: 2,
+    },
+    {
+      title: 'Middle Term Exam',
+      type: 'MIDTERM',
+      description: 'Middle term examination',
+      duration: 180,
+      totalMarks: 100,
+      passMarks: 40,
+      sequence: 3,
+    },
+    {
+      title: 'Final Exam',
+      type: 'FINAL',
+      description: 'Final examination',
+      duration: 180,
+      totalMarks: 100,
+      passMarks: 40,
+      sequence: 4,
+    },
+  ];
+
+  // Get all classes and subjects for creating exams
+  const allClasses = await prisma.class.findMany({ where: { isActive: true } });
+  const allSubjects = await prisma.subject.findMany({ where: { isActive: true } });
+  const allSections = await prisma.section.findMany({ where: { isActive: true } });
+
+  // Create exams for each class and subject combination
+  let examCount = 0;
+  for (const classItem of allClasses) {
+    for (const subject of allSubjects) {
+      for (const examTemplate of examTemplates) {
+        // Get a section for this class (if available)
+        const classSection = allSections.find(s => s.classId === classItem.id);
+        
+        // Create exam date based on sequence (spread throughout the year)
+        const baseDate = new Date('2024-03-01');
+        const examDate = new Date(baseDate);
+        examDate.setDate(baseDate.getDate() + (examTemplate.sequence * 7)); // Weekly intervals
+        
+        // Create start and end dates
+        const startDate = new Date(examDate);
+        const endDate = new Date(examDate);
+        endDate.setHours(examDate.getHours() + Math.floor(examTemplate.duration / 60));
+        
+        try {
+          await prisma.exam.create({
+            data: {
+              title: `${examTemplate.title} - ${subject.name} - Class ${classItem.name}`,
+              customName: '', // Empty custom name initially
+              type: examTemplate.type as any,
+              description: `${examTemplate.description} for ${subject.name} in Class ${classItem.name}`,
+              date: examDate,
+              startDate: startDate,
+              endDate: endDate,
+              duration: examTemplate.duration,
+              totalMarks: examTemplate.totalMarks,
+              passMarks: examTemplate.passMarks,
+              sequence: examTemplate.sequence,
+              classId: classItem.id,
+              sectionId: classSection?.id || null,
+              subjectId: subject.id,
+              teacherId: teacher.id,
+              isActive: true,
+            },
+          });
+          examCount++;
+        } catch (error) {
+          // Skip if exam already exists or other constraint violation
+          console.log(`Skipping exam creation for ${classItem.name} - ${subject.name} - ${examTemplate.title}`);
+        }
+      }
+    }
+  }
+
+  console.log(`✅ ${examCount} sample exams created across all classes and subjects`);
+
   console.log('🎉 Database seeding completed successfully!');
   console.log('');
   console.log('📋 Sample credentials:');
   console.log('Admin: admin@school.com / admin123');
   console.log('Teacher: teacher@school.com / admin123');
+  console.log('');
+  console.log('📊 Seeded Data Summary:');
+  console.log(`- ${allClasses.length} Classes`);
+  console.log(`- ${allSubjects.length} Subjects`);
+  console.log(`- ${examCount} Exams with proper sequencing`);
+  console.log(`- ${examTemplates.length} Different exam types available`);
 }
 
 main()

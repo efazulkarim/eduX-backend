@@ -37,6 +37,18 @@ export class StudentsService {
       }
     }
 
+    // Check if section exists if provided
+    if (createStudentDto.sectionId) {
+      const existingSection = await this.db.section.findUnique({
+        where: { id: createStudentDto.sectionId },
+      });
+      if (!existingSection) {
+        throw new BadRequestException(
+          `Section with ID ${createStudentDto.sectionId} does not exist`,
+        );
+      }
+    }
+
     // Convert dateOfBirth string to Date object if provided
     const data = {
       ...createStudentDto,
@@ -180,6 +192,18 @@ export class StudentsService {
 
   async update(id: string, updateStudentDto: UpdateStudentDto) {
     await this.findOne(id);
+    
+    // Check if section exists if provided
+    if (updateStudentDto.sectionId) {
+      const existingSection = await this.db.section.findUnique({
+        where: { id: updateStudentDto.sectionId },
+      });
+      if (!existingSection) {
+        throw new BadRequestException(
+          `Section with ID ${updateStudentDto.sectionId} does not exist`,
+        );
+      }
+    }
     
     // Convert dateOfBirth string to Date object if provided
     const data = {

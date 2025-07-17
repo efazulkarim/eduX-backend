@@ -66,7 +66,7 @@ sudo apt install nginx -y
 sudo -u postgres psql
 
 # Create database and user
-CREATE DATABASE school_management_db;
+CREATE DATABASE postgres;
 CREATE USER school_admin WITH PASSWORD 'your-secure-password';
 GRANT ALL PRIVILEGES ON DATABASE school_management_db TO school_admin;
 \q

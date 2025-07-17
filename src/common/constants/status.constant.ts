@@ -31,3 +31,13 @@ export enum Shift {
   DAY = 'DAY',
   EVENING = 'EVENING',
 }
+
+export enum Medium {
+  BANGLA = 'BANGLA',
+  ENGLISH = 'ENGLISH',
+}
+
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  TEACHER = 'TEACHER',
+}

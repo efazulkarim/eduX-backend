@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SetupController } from './setup.controller';
 import { SetupService } from './setup.service';
 import { Medium } from '../classes/dto/create-class.dto';
+import { SaveDepartmentSetupDto } from './dto/department-setup.dto';
 
 describe('SetupController', () => {
   let controller: SetupController;
@@ -152,7 +153,7 @@ describe('SetupController', () => {
   });
 
   describe('saveDepartmentSetup', () => {
-    const setupData = {
+    const setupData: SaveDepartmentSetupDto = {
       classId: 'class-1',
       departments: [
         { id: 'dept-1', isActive: true },

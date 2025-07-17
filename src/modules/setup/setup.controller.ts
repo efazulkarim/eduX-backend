@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Query, Param } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { SetupService } from './setup.service';
 import { Medium } from '../classes/dto/create-class.dto';
+import { SaveDepartmentSetupDto } from './dto/department-setup.dto';
 
 @ApiTags('Setup')
 @Controller('setup')
@@ -50,13 +51,7 @@ export class SetupController {
     status: 200,
     description: 'Department setup saved successfully',
   })
-  saveDepartmentSetup(
-    @Body()
-    setupData: {
-      classId: string;
-      departments: Array<{ id: string; isActive: boolean }>;
-    },
-  ) {
+  saveDepartmentSetup(@Body() setupData: SaveDepartmentSetupDto) {
     return this.setupService.saveDepartmentSetup(setupData);
   }
 

@@ -15,7 +15,11 @@ export class CreateStudentDto {
   @IsNotEmpty()
   firstName: string;
 
-  @ApiProperty({ description: 'Student last name', example: 'Doe', required: false })
+  @ApiProperty({
+    description: 'Student last name',
+    example: 'Doe',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   lastName?: string;
@@ -25,12 +29,20 @@ export class CreateStudentDto {
   @IsOptional()
   rollNumber?: string;
 
-  @ApiProperty({ description: 'Admission number', example: 'ADM001', required: false })
+  @ApiProperty({
+    description: 'Admission number',
+    example: 'ADM001',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   admissionNo?: string;
 
-  @ApiProperty({ description: 'Date of birth', example: '2010-05-15', required: false })
+  @ApiProperty({
+    description: 'Date of birth',
+    example: '2010-05-15',
+    required: false,
+  })
   @IsDateString()
   @IsOptional()
   dateOfBirth?: string;
@@ -40,22 +52,38 @@ export class CreateStudentDto {
   @IsOptional()
   gender?: Gender;
 
-  @ApiProperty({ description: 'Address', example: '123 Street, City', required: false })
+  @ApiProperty({
+    description: 'Address',
+    example: '123 Street, City',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   address?: string;
 
-  @ApiProperty({ description: 'Father name', example: 'John Doe Sr.', required: false })
+  @ApiProperty({
+    description: 'Father name',
+    example: 'John Doe Sr.',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   fatherName?: string;
 
-  @ApiProperty({ description: 'Mother name', example: 'Jane Doe', required: false })
+  @ApiProperty({
+    description: 'Mother name',
+    example: 'Jane Doe',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   motherName?: string;
 
-  @ApiProperty({ description: 'Parent phone', example: '+1234567890', required: false })
+  @ApiProperty({
+    description: 'Parent phone',
+    example: '+1234567890',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   parentPhone?: string;
@@ -74,12 +102,20 @@ export class CreateStudentDto {
   @IsOptional()
   bloodGroup?: string;
 
-  @ApiProperty({ enum: Medium, description: 'Medium of instruction', required: false })
+  @ApiProperty({
+    enum: Medium,
+    description: 'Medium of instruction',
+    required: false,
+  })
   @IsEnum(Medium)
   @IsOptional()
   medium?: Medium;
 
-  @ApiProperty({ description: 'Academic year', required: false, example: '2024' })
+  @ApiProperty({
+    description: 'Academic year',
+    required: false,
+    example: '2024',
+  })
   @IsString()
   @IsOptional()
   academicYear?: string;
