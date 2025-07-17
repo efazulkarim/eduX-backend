@@ -51,10 +51,10 @@ export class UpdateExamListDto {
   @IsNumber()
   Sequence?: number;
 
-  @ApiProperty({ description: 'Is Active status', required: false })
+  @ApiProperty({ description: 'Is Active status (0 or 1)', required: false })
   @IsOptional()
-  @IsBoolean()
-  IsActive?: boolean;
+  @IsNumber()
+  IsActive?: number;
 
   @ApiProperty({ description: 'Start Date', required: false })
   @IsOptional()

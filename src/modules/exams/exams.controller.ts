@@ -15,6 +15,7 @@ import { CreateExamDto } from './dto/create-exam.dto';
 import { UpdateExamDto } from './dto/update-exam.dto';
 import { FilterExamDto } from './dto/filter-exam.dto';
 import { UpdateExamListDto } from './dto/exam-list.dto';
+import { SaveExamSetupDto } from './dto/save-exam-setup.dto';
 
 @ApiTags('Exams')
 @Controller('exams')
@@ -66,25 +67,26 @@ export class ExamsController {
     return this.examsService.findAll(filterDto);
   }
 
-  @Get('by-class/:classId')
-  @ApiOperation({ summary: 'Get exams by class ID' })
-  @ApiResponse({ status: 200, description: 'Exams retrieved successfully' })
-  getExamsByClass(@Param('classId') classId: string) {
-    return this.examsService.getExamsByClass(classId);
-  }
 
-  @Get('by-medium/:medium')
-  @ApiOperation({ summary: 'Get exams by medium' })
-  @ApiResponse({ status: 200, description: 'Exams retrieved successfully' })
-  getExamsByMedium(@Param('medium') medium: string) {
-    return this.examsService.getExamsByMedium(medium);
-  }
 
   @Get('list')
   @ApiOperation({ summary: 'Get exam list in frontend format' })
   @ApiResponse({ status: 200, description: 'Exam list retrieved successfully' })
-  getExamList() {
-    return this.examsService.getExamList();
+  @ApiQuery({
+    name: 'classId',
+    required: false,
+    description: 'Filter by class ID',
+  })
+  @ApiQuery({
+    name: 'medium',
+    required: false,
+    description: 'Filter by medium',
+  })
+  getExamList(
+    @Query('classId') classId?: string,
+    @Query('medium') medium?: string,
+  ) {
+    return this.examsService.getExamList(classId, medium);
   }
 
   @Get(':id')
@@ -125,5 +127,16 @@ export class ExamsController {
     @Body() updateData: UpdateExamListDto,
   ) {
     return this.examsService.updateExamListItem(id, updateData);
+  }
+
+  @Post('list/save')
+  @ApiOperation({ summary: 'Save exam setup configuration (bulk update)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Exam setup saved successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  saveExamSetup(@Body() setupData: SaveExamSetupDto) {
+    return this.examsService.saveExamSetup(setupData);
   }
 }

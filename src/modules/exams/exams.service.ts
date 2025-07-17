@@ -309,79 +309,23 @@ export class ExamsService {
     });
   }
 
-  async getExamsByClass(classId: string) {
-    return this.prisma.exam.findMany({
-      where: {
-        classId,
-        isActive: true,
-      },
-      include: {
-        subject: {
-          select: {
-            name: true,
-            code: true,
-          },
-        },
-        teacher: {
-          include: {
-            user: {
-              select: {
-                firstName: true,
-                lastName: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        date: 'asc',
-      },
-    });
-  }
 
-  async getExamsByMedium(medium: string) {
-    return this.prisma.exam.findMany({
-      where: {
-        class: {
-          medium: medium as any,
-        },
-        isActive: true,
-      },
-      include: {
-        class: {
-          select: {
-            name: true,
-            medium: true,
-          },
-        },
-        subject: {
-          select: {
-            name: true,
-            code: true,
-          },
-        },
-        teacher: {
-          include: {
-            user: {
-              select: {
-                firstName: true,
-                lastName: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        date: 'asc',
-      },
-    });
-  }
 
-  async getExamList() {
+  async getExamList(classId?: string, medium?: string) {
+    const where: any = {}; // Show all exams, not just inactive ones
+
+    if (classId) {
+      where.classId = classId;
+    }
+
+    if (medium) {
+      where.class = {
+        medium: medium as any,
+      };
+    }
+
     const exams = await this.prisma.exam.findMany({
-      where: {
-        isActive: false,
-      },
+      where,
       include: {
         class: {
           select: {
@@ -460,5 +404,70 @@ export class ExamsService {
         },
       },
     });
+  }
+
+  async saveExamSetup(setupData: any) {
+    const { classId, medium, exams } = setupData;
+
+    // Validate that exams array is provided
+    if (!exams || !Array.isArray(exams)) {
+      throw new BadRequestException('Exams array is required');
+    }
+
+    // Process each exam update
+    const updatePromises = exams.map(async (examData: any) => {
+      const { id, isActive, startDate, endDate, customName, sequence } = examData;
+
+      if (!id) {
+        throw new BadRequestException('Exam ID is required for each exam');
+      }
+
+      // Check if exam exists
+      const existingExam = await this.prisma.exam.findUnique({
+        where: { id },
+      });
+
+      if (!existingExam) {
+        throw new NotFoundException(`Exam with ID ${id} not found`);
+      }
+
+      // Prepare update data
+      const updateFields: any = {};
+
+      if (isActive !== undefined) {
+        updateFields.isActive = isActive === 1;
+      }
+
+      if (startDate !== undefined) {
+        updateFields.startDate = new Date(startDate);
+      }
+
+      if (endDate !== undefined) {
+        updateFields.endDate = new Date(endDate);
+      }
+
+      if (customName !== undefined) {
+        updateFields.customName = customName;
+      }
+
+      if (sequence !== undefined) {
+        updateFields.sequence = sequence;
+      }
+
+      // Update the exam
+      return this.prisma.exam.update({
+        where: { id },
+        data: updateFields,
+      });
+    });
+
+    // Execute all updates
+    await Promise.all(updatePromises);
+
+    return {
+      success: true,
+      message: `Successfully updated ${exams.length} exam(s)`,
+      updatedCount: exams.length,
+    };
   }
 }
