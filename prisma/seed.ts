@@ -593,7 +593,8 @@ async function main() {
       } catch (error) {
         // Skip if exam already exists or other constraint violation
         console.log(
-          `Skipping exam creation for ${classItem.name} - ${examData.title}`,
+          `Skipping exam creation for ${classItem.name} - ${examData.title}:`,
+          error.message || error
         );
       }
     }
