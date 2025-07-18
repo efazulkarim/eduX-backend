@@ -43,12 +43,12 @@ export class ExamsService {
       throw new BadRequestException('Subject not found');
     }
 
-    // Validate teacher exists
-    const teacherExists = await this.prisma.teacher.findUnique({
+    // Validate staff exists
+    const staffExists = await this.prisma.staff.findUnique({
       where: { id: teacherId },
     });
-    if (!teacherExists) {
-      throw new BadRequestException('Teacher not found');
+    if (!staffExists) {
+      throw new BadRequestException('Staff not found');
     }
 
     // Validate pass marks is not greater than total marks
@@ -65,13 +65,13 @@ export class ExamsService {
         classId,
         sectionId,
         subjectId,
-        teacherId,
+        staffId: teacherId,
       },
       include: {
         class: true,
         section: true,
         subject: true,
-        teacher: {
+        staff: {
           include: {
             user: {
               select: {
@@ -107,7 +107,7 @@ export class ExamsService {
     }
 
     if (filterDto?.teacherId) {
-      where.teacherId = filterDto.teacherId;
+      where.staffId = filterDto.teacherId;
     }
 
     if (filterDto?.medium) {
@@ -139,7 +139,7 @@ export class ExamsService {
             code: true,
           },
         },
-        teacher: {
+        staff: {
           include: {
             user: {
               select: {
@@ -168,7 +168,7 @@ export class ExamsService {
         class: true,
         section: true,
         subject: true,
-        teacher: {
+        staff: {
           include: {
             user: {
               select: {
@@ -242,13 +242,13 @@ export class ExamsService {
       }
     }
 
-    // Validate teacher exists if provided
+    // Validate staff exists if provided
     if (teacherId) {
-      const teacherExists = await this.prisma.teacher.findUnique({
+      const staffExists = await this.prisma.staff.findUnique({
         where: { id: teacherId },
       });
-      if (!teacherExists) {
-        throw new BadRequestException('Teacher not found');
+      if (!staffExists) {
+        throw new BadRequestException('Staff not found');
       }
     }
 
@@ -270,7 +270,7 @@ export class ExamsService {
     if (classId) updateData.classId = classId;
     if (sectionId) updateData.sectionId = sectionId;
     if (subjectId) updateData.subjectId = subjectId;
-    if (teacherId) updateData.teacherId = teacherId;
+    if (teacherId) updateData.staffId = teacherId;
 
     return this.prisma.exam.update({
       where: { id },
@@ -279,7 +279,7 @@ export class ExamsService {
         class: true,
         section: true,
         subject: true,
-        teacher: {
+        staff: {
           include: {
             user: {
               select: {

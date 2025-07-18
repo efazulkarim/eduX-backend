@@ -16,7 +16,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && user.password && (await bcrypt.compare(password, user.password))) {
       const { password, ...result } = user;
       return result;
     }
@@ -48,22 +48,8 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const existingUser = await this.usersService.findByEmail(registerDto.email);
-    if (existingUser) {
-      throw new UnauthorizedException('User already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(
-      registerDto.password,
-      parseInt(this.configService.get<string>('BCRYPT_ROUNDS', '10')),
-    );
-
-    const user = await this.usersService.create({
-      ...registerDto,
-      password: hashedPassword,
-    });
-
-    const { password, ...result } = user;
-    return result;
+    // Registration is now handled through staff management endpoints
+    // This method is deprecated and should not be used
+    throw new UnauthorizedException('Registration is not available through this endpoint. Please use staff management endpoints.');
   }
 }

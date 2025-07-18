@@ -101,22 +101,29 @@ async function main() {
     },
   });
 
-  const teacher = await prisma.teacher.upsert({
-    where: { userId: teacherUser.id },
-    update: {},
-    create: {
-      userId: teacherUser.id,
-      employeeId: 'EMP001',
-      dateOfBirth: new Date('1985-01-01'),
-      gender: 'MALE' as const,
-      address: '123 Teacher Street',
-      phone: '+1234567891',
-      qualification: 'Masters in Education',
-      experience: 5,
-      salary: 50000,
-      isActive: true,
-    },
+  // Use existing staff member or create new one
+  let teacher = await prisma.staff.findFirst({
+    where: { role: 'TEACHER', isActive: true },
   });
+  
+  if (!teacher) {
+    teacher = await prisma.staff.upsert({
+      where: { userId: teacherUser.id },
+      update: {},
+      create: {
+        userId: teacherUser.id,
+        employeeId: 'EMP006',
+        dateOfBirth: new Date('1985-01-01'),
+        gender: 'MALE' as const,
+        address: '123 Teacher Street',
+        qualification: 'Masters in Education',
+        experience: 5,
+        salary: 50000,
+        role: 'TEACHER',
+        isActive: true,
+      },
+    });
+  }
 
   console.log('✅ Sample teacher created');
 
@@ -423,7 +430,7 @@ async function main() {
         code: subjectData.code,
         description: subjectData.description,
         credits: subjectData.credits,
-        teacherId: teacher.id,
+        staffId: teacher.id,
         isActive: true,
       },
     });
@@ -585,7 +592,7 @@ async function main() {
             classId: classItem.id,
             sectionId: classSection?.id || null,
             subjectId: firstSubject?.id,
-            teacherId: teacher.id,
+            staffId: teacher.id,
             isActive: examData.isActive,
           },
         });

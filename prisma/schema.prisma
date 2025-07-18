@@ -10,7 +10,7 @@ datasource db {
 model User {
   id            String         @id @default(cuid())
   email         String         @unique
-  password      String
+  password      String?
   role          UserRole
   firstName     String
   lastName      String
@@ -20,7 +20,7 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   notifications Notification[]
-  teacher       Teacher?
+  staff         Staff?
 
   @@map("users")
 }
@@ -55,27 +55,77 @@ model Student {
   @@map("students")
 }
 
-model Teacher {
-  id            String       @id @default(cuid())
-  userId        String       @unique
-  employeeId    String       @unique
-  dateOfBirth   DateTime
-  gender        Gender
-  address       String
-  phone         String
-  qualification String
-  experience    Int
-  salary        Decimal
-  joinDate      DateTime     @default(now())
-  isActive      Boolean      @default(true)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  attendances   Attendance[]
-  exams         Exam[]
-  subjects      Subject[]
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Staff {
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  employeeId       String            @unique
+  role             StaffRole         @default(OTHER)
+  idNo             String?
+  hfId             String?
+  dateOfBirth      DateTime?
+  joiningDate      DateTime          @default(now())
+  bloodGroup       String?
+  gender           Gender?
+  religion         String?
+  medium           Medium?
+  department       String?
+  designation      String?
+  shift            Shift?
+  nid              String?
+  birthCertNo      String?
+  email            String?
+  serialNo         String?
+  presentAddress   String?
+  permanentAddress String?
+  // Teacher-specific fields
+  qualification    String?
+  experience       Int?
+  salary           Decimal?
+  address          String?
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  educations       StaffEducation[]
+  experiences      StaffExperience[]
+  // Teacher relationships
+  attendances      Attendance[]
+  exams            Exam[]
+  subjects         Subject[]
+  @@map("staff")
+}
 
-  @@map("teachers")
+model StaffEducation {
+  id          String   @id @default(cuid())
+  staffId     String
+  exam        String
+  institute   String
+  gpa         String?
+  grade       String?
+  passingYear String?
+  board       String?
+  duration    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  staff       Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("staff_educations")
+}
+
+model StaffExperience {
+  id           String    @id @default(cuid())
+  staffId      String
+  designation  String
+  organization String
+  address      String?
+  duration     String?
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  staff        Staff     @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@map("staff_experiences")
 }
 
 model Class {
@@ -151,7 +201,7 @@ model Subject {
   classId      String?
   departmentId String?
   sectionId    String?
-  teacherId    String?
+  staffId      String?
   isActive     Boolean      @default(true)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -160,7 +210,7 @@ model Subject {
   class        Class?       @relation(fields: [classId], references: [id])
   department   Department?  @relation(fields: [departmentId], references: [id])
   section      Section?     @relation(fields: [sectionId], references: [id])
-  teacher      Teacher?     @relation(fields: [teacherId], references: [id])
+  staff        Staff?       @relation(fields: [staffId], references: [id])
 
   @@map("subjects")
 }
@@ -171,7 +221,7 @@ model Attendance {
   classId   String
   sectionId String?
   subjectId String?
-  teacherId String
+  staffId   String
   date      DateTime
   status    AttendanceStatus
   remarks   String?
@@ -181,7 +231,7 @@ model Attendance {
   section   Section?         @relation(fields: [sectionId], references: [id])
   student   Student          @relation(fields: [studentId], references: [id])
   subject   Subject?         @relation(fields: [subjectId], references: [id])
-  teacher   Teacher          @relation(fields: [teacherId], references: [id])
+  staff     Staff            @relation(fields: [staffId], references: [id])
 
   @@unique([studentId, classId, date])
   @@map("attendances")
@@ -203,7 +253,7 @@ model Exam {
   classId     String
   sectionId   String?
   subjectId   String
-  teacherId   String
+  staffId     String
   isActive    Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -211,7 +261,7 @@ model Exam {
   class       Class        @relation(fields: [classId], references: [id])
   section     Section?     @relation(fields: [sectionId], references: [id])
   subject     Subject      @relation(fields: [subjectId], references: [id])
-  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  staff       Staff        @relation(fields: [staffId], references: [id])
 
   @@map("exams")
 }
@@ -294,6 +344,25 @@ model Notification {
 enum UserRole {
   ADMIN
   TEACHER
+  ACCOUNTANT
+  EMPLOYEE
+  EXAM_CONTROLLER
+  LIBRARIAN
+  SECURITY
+  CLEANER
+  DRIVER
+}
+
+enum StaffRole {
+  TEACHER
+  ADMIN_STAFF
+  ACCOUNTANT
+  EXAM_CONTROLLER
+  LIBRARIAN
+  SECURITY
+  CLEANER
+  DRIVER
+  OTHER
 }
 
 enum Gender {

@@ -262,8 +262,8 @@ export class SetupService {
     });
 
     // Get available teachers
-    const availableTeachers = await this.db.teacher.findMany({
-      where: { isActive: true },
+    const availableTeachers = await this.db.staff.findMany({
+      where: { isActive: true, role: 'TEACHER' },
       include: {
         user: {
           select: {
